@@ -1,0 +1,14 @@
+# Data files
+data/*.csv
+data_*.csv
+
+# Logs
+logs/*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+.DS_Store

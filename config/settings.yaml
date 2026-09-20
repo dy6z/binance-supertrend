@@ -1,0 +1,34 @@
+exchange:
+  name: "binance"
+  sandbox: false # Set true for Binance Futures Testnet
+  rate_limit: true
+
+strategy:
+  symbols:
+    # BTC: STOPPED - Backtest -785% loss
+    # HYPE: STOPPED - Backtest -12% loss, high whipsaw
+    # ENA: STOPPED - Backtest 0% return
+    - "ETH/USDT:USDT"
+    - "SOL/USDT:USDT"
+    - "ZEC/USDT:USDT"
+    - "SNDK/USDT:USDT"
+  timeframe: "15m"
+  supertrend_period: 10
+  supertrend_multiplier: 3.0
+  lookback_candles: 150
+
+risk:
+  margin_mode: "ISOLATED" # ISOLATED or CROSSED
+  leverage: 10
+  btc_leverage: 5
+  margin_per_trade_usdt: 1.0 # Margin in USDT per position (used if margin_pct_per_trade is 0)
+  margin_pct_per_trade: 0.02 # 2% of equity per trade
+  max_open_positions: 5
+  take_profit_pct: 0.011 # 1.1% TP (0 to disable)
+  stop_loss_pct: 0.007   # 0.7% SL (0 to disable)
+  max_daily_loss_pct: 0.03 # 3% Daily Loss Halt
+  use_tp_sl_orders: false
+
+execution:
+  flip_enabled: true
+  poll_interval_sec: 10 # Polling frequency for candle close synchronization
