@@ -10,6 +10,16 @@ Standalone automated trading bot for Binance USD-M Futures based on the SuperTre
   - **Support Filter**: Blocks SELL signals if `close < (PivotLow * 1.001)`.
 - **Flip Execution**: Automatically flips positions (closes SHORT before opening LONG, and vice versa) upon signal direction changes. No static TP/SL — trends are held until reversal.
 
+## Performance Metrics (Deterministic, 10,000 candles per symbol)
+| Symbol | Trades | WR (%) | PF | Return |
+| :--- | :---: | :---: | :---: | :--- |
+| **ETH** | 116 | 34.5% | 1.08 | 85.01 |
+| **SOL** | 76 | 36.8% | 1.51 | 16.51 |
+| **ZEC** | 72 | 45.8% | 2.35 | 561.22 |
+| **SNDK** | 89 | 40.4% | 1.31 | 283.55 |
+
+**Total Trades: 353**
+
 ## Directory Structure
 ```text
 binance-supertrend/
@@ -61,8 +71,3 @@ The bot runs as a systemd user service.
   ```bash
   tail -f logs/runner.log
   ```
-
-## Setup & Maintenance
-1. **Config**: Edit `config/settings.yaml` to adjust trading pairs, leverage, or RWI triggers per symbol.
-2. **Backtesting**: Use `scripts/backtest.py` with deterministic CSV data to validate strategies before any config change.
-3. **Security**: Ensure `.env` is in `.gitignore` (contains API credentials).
