@@ -42,12 +42,27 @@ python3 scripts/status.py
 python3 src/runner.py --once
 ```
 
-### 4. Run Continuous Daemon
-```bash
-python3 src/runner.py
-```
+## Service Management
+The bot runs as a systemd user service.
+
+- **Check status:**
+  ```bash
+  systemctl --user status binance-supertrend.service
+  ```
+- **Stop bot:**
+  ```bash
+  systemctl --user stop binance-supertrend.service
+  ```
+- **Start bot:**
+  ```bash
+  systemctl --user start binance-supertrend.service
+  ```
+- **View logs:**
+  ```bash
+  tail -f logs/runner.log
+  ```
 
 ## Setup & Maintenance
 1. **Config**: Edit `config/settings.yaml` to adjust trading pairs, leverage, or RWI triggers per symbol.
-2. **Monitoring**: View logs in `logs/runner.log`.
-3. **Backtesting**: Use `scripts/backtest.py` to validate logic changes.
+2. **Backtesting**: Use `scripts/backtest.py` with deterministic CSV data to validate strategies before any config change.
+3. **Security**: Ensure `.env` is in `.gitignore` (contains API credentials).
