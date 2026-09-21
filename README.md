@@ -5,12 +5,16 @@ Standalone automated trading bot for Binance USD-M Futures based on the SuperTre
 ## Strategy: SuperRWI + Pivot Filter
 - **SuperTrend**: Standard Wilder's RMA SuperTrend.
 - **RWI (Range Weighted Index)**: Volatility-based trend strength filter (customizable per symbol).
+  - **Tuning**: ETH (1.0), SOL/ZEC/SNDK (1.3 optimized).
 - **Pivot Filter (S&R)**: Dynamically calculates Pivot Highs/Lows (20-bar rolling window).
   - **Resistance Filter**: Blocks BUY signals if `close > (PivotHigh * 0.999)`.
   - **Support Filter**: Blocks SELL signals if `close < (PivotLow * 1.001)`.
 - **Flip Execution**: Automatically flips positions (closes SHORT before opening LONG, and vice versa) upon signal direction changes. No static TP/SL — trends are held until reversal.
 
-## Performance Metrics (Deterministic, 10,000 candles per symbol)
+## Performance Metrics (Deterministic)
+- **Dataset**: 10,000 candles per symbol (15m timeframe).
+- **Duration**: ~104 days (~3.5 months) of continuous data.
+
 | Symbol | Trades | WR (%) | PF | Return |
 | :--- | :---: | :---: | :---: | :--- |
 | **ETH** | 116 | 34.5% | 1.08 | 85.01 |
@@ -71,3 +75,8 @@ The bot runs as a systemd user service.
   ```bash
   tail -f logs/runner.log
   ```
+
+## Setup & Maintenance
+1. **Config**: Edit `config/settings.yaml` to adjust trading pairs, leverage, or RWI triggers per symbol.
+2. **Backtesting**: Use `scripts/backtest.py` with deterministic CSV data to validate strategies before any config change.
+3. **Security**: Ensure `.env` is in `.gitignore` (contains API credentials).
