@@ -1,78 +1,61 @@
-import os
-import sys
-import time
-import signal
 import logging
-import argparse
-from pathlib import Path
+import time
 import yaml
-
-# Add project root to sys.path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
+from pathlib import Path
 from src.binance_client import BinanceFuturesClient
 from src.engine import SupertrendEngine
 
-LOG_DIR = Path("/home/dy6z/workspace/binance-supertrend/logs")
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler(LOG_DIR / "runner.log")
-    ]
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
 log = logging.getLogger("binance-supertrend")
 
-running = True
-
-def handle_exit(signum, frame):
-    global running
-    log.info("Shutdown signal received. Exiting gracefully...")
-    running = False
-
-signal.signal(signal.SIGINT, handle_exit)
-signal.signal(signal.SIGTERM, handle_exit)
-
-def load_config(config_path: str = "config/settings.yaml") -> dict:
-    with open(config_path, "r") as f:
+def load_settings():
+    settings_path = Path(__file__).parent.parent / "config" / "settings.yaml"
+    with open(settings_path) as f:
         return yaml.safe_load(f)
 
-def main():
-    parser = argparse.ArgumentParser(description="Binance Futures SuperTrend Auto-Trader")
-    parser.add_argument("--config", default="config/settings.yaml", help="Path to config file")
-    parser.add_argument("--once", action="store_true", help="Run one evaluation cycle and exit")
-    parser.add_argument("--live", action="store_true", help="Override config to run in LIVE mode")
-    args = parser.parse_args()
+def run():
+    client = BinanceFuturesClient()
+    settings = load_settings()
+    strategy = settings.get('strategy', {})
+    sp = strategy.get('symbol_params', {})
 
-    config = load_config(args.config)
-    if args.live:
-        config["exchange"]["sandbox"] = False
+    # Symbols from settings.yaml (AKE removed 2026-09-26 - negative PF on 60d backtest)
+    symbols = ["BTC/USDT:USDT", "SOL/USDT:USDT", "ZEC/USDT:USDT", "SNDK/USDT:USDT", "1000PEPE/USDT:USDT"]
+    # Per-symbol leverage override (BTC uses 5x per settings.yaml btc_leverage)
+    lev_override = {"BTC": settings.get('risk', {}).get('btc_leverage', 5)}
+    log.info(f"Starting Binance SuperTrend Bot | Symbols: {symbols}")
 
-    is_sandbox = config.get("exchange", {}).get("sandbox", False)
-    log.info(f"Starting Binance SuperTrend Bot. Mode: {'TESTNET' if is_sandbox else 'LIVE'}")
+    engine = SupertrendEngine(client, settings)
 
-    client = BinanceFuturesClient(sandbox=is_sandbox)
-    engine = SupertrendEngine(client, config)
-
-    symbols = config.get("strategy", {}).get("symbols", ["BTC/USDT:USDT"])
-    poll_interval = int(config.get("execution", {}).get("poll_interval_sec", 15))
-
-    while running:
-        for symbol in symbols:
-            try:
-                res = engine.evaluate_and_execute(symbol)
-            except Exception as e:
-                log.error(f"Error during execution for {symbol}: {e}", exc_info=True)
-
-        if args.once:
-            log.info("Single evaluation run completed.")
-            break
-
-        time.sleep(poll_interval)
+    while True:
+        try:
+            for symbol in symbols:
+                sym_name = symbol.split("/")[0]
+                params = sp.get(sym_name, {})
+                action = engine.evaluate_and_execute(symbol)
+                if action:
+                    log.info(f"Action: {action}")
+                    try:
+                        if action['action'] == 'OPEN':
+                            side = "BUY" if action['side'] == "LONG" else "SELL"
+                            res = client.open_position(
+                                symbol=action['symbol'],
+                                side=side,
+                                margin_usdt=1.0,
+                                leverage=lev_override.get(sym_name, 10),
+                                tp_pct=params.get('take_profit_pct', 0.015),
+                                sl_pct=params.get('stop_loss_pct', 0.025)
+                            )
+                            log.info(f"Result: {res}")
+                        elif action['action'] == 'CLOSE':
+                            res = client.close_position(action['symbol'])
+                            log.info(f"Result: {res}")
+                    except Exception as e:
+                        log.error(f"Execution failed: {e}")
+            time.sleep(10)
+        except Exception as e:
+            log.error(f"Error, retry in 30s... {e}")
+            time.sleep(30)
 
 if __name__ == "__main__":
-    main()
+    run()

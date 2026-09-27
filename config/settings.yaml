@@ -5,17 +5,47 @@ exchange:
 
 strategy:
   symbols:
-    # BTC: STOPPED - Backtest -785% loss
+    # BTC: RE-ADDED 2026-09-26 - Grid search 60d: TP2/SL2/RWI1.2 PF 1.57
     # HYPE: STOPPED - Backtest -12% loss, high whipsaw
     # ENA: STOPPED - Backtest 0% return
-    - "ETH/USDT:USDT"
+    # AKE: REMOVED 2026-09-26 - Backtest 60d negative PF best combo
+    # ETH: not monitored by runner
+    - "BTC/USDT:USDT"
     - "SOL/USDT:USDT"
     - "ZEC/USDT:USDT"
     - "SNDK/USDT:USDT"
+    - "1000PEPE/USDT:USDT"
   timeframe: "15m"
   supertrend_period: 10
   supertrend_multiplier: 3.0
   lookback_candles: 150
+  # Per-symbol overrides (from frozen_60d grid search, 5713 candles, 2026-07-28 -> 2026-09-26)
+  symbol_params:
+    BTC:
+      take_profit_pct: 0.020
+      stop_loss_pct: 0.020
+      profit_lock_threshold: 0.005
+      rwi_trigger: 1.2
+    SOL:
+      take_profit_pct: 0.015
+      stop_loss_pct: 0.025
+      profit_lock_threshold: 0.01
+      rwi_trigger: 1.0
+    ZEC:
+      take_profit_pct: 0.030
+      stop_loss_pct: 0.020
+      profit_lock_threshold: 0.005
+      rwi_trigger: 1.0
+    SNDK:
+      take_profit_pct: 0.010
+      stop_loss_pct: 0.020
+      profit_lock_threshold: 0.005
+      rwi_trigger: 1.0
+    "1000PEPE":
+      take_profit_pct: 0.020
+      stop_loss_pct: 0.020
+      profit_lock_threshold: 0.005
+      rwi_trigger: 1.2
 
 risk:
   margin_mode: "ISOLATED" # ISOLATED or CROSSED
@@ -24,10 +54,11 @@ risk:
   margin_per_trade_usdt: 1.0 # Margin in USDT per position (used if margin_pct_per_trade is 0)
   margin_pct_per_trade: 0.02 # 2% of equity per trade
   max_open_positions: 5
-  take_profit_pct: 0.011 # 1.1% TP (0 to disable)
-  stop_loss_pct: 0.007   # 0.7% SL (0 to disable)
+  take_profit_pct: 0.015 # 1.5% TP (0 to disable)
+  stop_loss_pct: 0.025   # 2.5% SL (0 to disable)
+  profit_lock_threshold: 0.01 # 1.0% profit lock for safety flip
   max_daily_loss_pct: 0.03 # 3% Daily Loss Halt
-  use_tp_sl_orders: false
+  use_tp_sl_orders: true
 
 execution:
   flip_enabled: true
