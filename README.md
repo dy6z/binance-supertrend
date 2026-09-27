@@ -1,4 +1,4 @@
-# Binance Futures SuperRWI Bot (Production)
+# Binance Futures SuperRWI Bot
 
 Automated trading bot for Binance USD-M Futures using SuperTrend + Range Weighted Index (RWI) + Pivot Filter. Optimized for 5 specific crypto symbols on 15m timeframe.
 
