@@ -2,6 +2,11 @@
 data/*.csv
 data_*.csv
 
+# Live trade logs & grid outputs (regenerated locally)
+trade_log.csv
+zec_grid.csv
+grid_search_results.csv
+
 # Logs
 logs/*.log
 
