@@ -205,16 +205,30 @@ class BinanceFuturesClient:
             return {"status": "error", "message": str(e)}
 
     def cleanup_algo_orders(self, symbol: str) -> None:
-        """Cancel all open algo orders (TP/SL) for a symbol."""
+        """Cancel open algo orders (TP/SL) for this symbol ONLY.
+
+        BUGFIX 2026-09-28: native algo API needs the market id (ZECUSDT), not the
+        CCXT unified symbol (ZEC/USDT:USDT). Passing the wrong format makes the
+        filter ignored, the API returns the WHOLE account's open algos, and this
+        method was wiping other symbols' TP/SL (observed: ZEC's stop deleted
+        under a 'for SOL' log, INJ's stop deleted under a 'for BTC' log).
+        Now we convert the symbol and delete only orders belonging to it.
+        """
         try:
-            algo_orders = self.exchange.fapiPrivateGetOpenAlgoOrders({"symbol": symbol})
+            native_sym = self.exchange.market_id(symbol)
+            if not native_sym:
+                log.warning(f"Cannot resolve native symbol id for {symbol}, skipping cleanup")
+                return
+            algo_orders = self.exchange.fapiPrivateGetOpenAlgoOrders({"symbol": native_sym})
             if isinstance(algo_orders, dict):
                 algo_orders = algo_orders.get("orders", [])
-            
+
             for ao in algo_orders:
+                if ao.get("symbol") and ao["symbol"] != native_sym:
+                    continue  # never touch another symbol's orders
                 try:
                     self.exchange.fapiPrivateDeleteAlgoOrder({
-                        "symbol": symbol,
+                        "symbol": native_sym,
                         "algoId": ao["algoId"]
                     })
                     log.info(f"Cleaned orphan algo order {ao['algoId']} for {symbol}")

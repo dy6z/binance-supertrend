@@ -31,6 +31,7 @@ To ensure deterministic results, all backtests and grid searches MUST use the fo
 - **Validation**: Every strategy change must be verified against `backtest_5sym.py` to ensure no regression in combined Profit Factor.
 
 ## Maintenance Log
+- **2026-09-28 (night)**: Fixed critical `cleanup_algo_orders` bug — it passed the CCXT symbol format (`ZEC/USDT:USDT`) to the native algo API which expects the market id (`ZECUSDT`), so the filter was silently ignored and the call deleted the WHOLE account's open TP/SL algos (observed: ZEC's stop deleted under a "for SOL" log, INJ's stop under "for BTC"). Result: exchange-side stops disappeared, positions ran past their configured SL (ZEC closed −3.34% vs 2% configured). Fix: convert via `market_id()`, delete only orders whose `symbol` matches, with a per-order guard. Service restarted + TP/SL re-placed on all open positions; functional test confirms cross-symbol algos survive a cleanup of another symbol.
 - **2026-09-28**: INJ added to live roster (TP1.5/SL2.0/lock0/RWI1.0). Also fixed a silent bug: `runner.py` had the symbol list HARDCODED, so edits to `strategy.symbols` in `settings.yaml` were ignored. The runner now reads the list from the YAML (single source of truth) — after any config change, verify the startup log line `Starting Binance SuperTrend Bot | Symbols: [...]` before trusting the roster.
 
 ## Directory Structure
