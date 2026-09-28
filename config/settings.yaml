@@ -15,6 +15,9 @@ strategy:
     - "ZEC/USDT:USDT"
     - "SNDK/USDT:USDT"
     - "1000PEPE/USDT:USDT"
+    # INJ: ADDED 2026-09-28 - RWI1.0 default screen: PF>1 all TP/SL combos,
+    # grid 60d TP1.5/SL2/lock0/RWI1.0 PF 1.17 (net 1.05), 90 trades, WR 52%
+    - "INJ/USDT:USDT"
   timeframe: "15m"
   supertrend_period: 10
   supertrend_multiplier: 3.0
@@ -46,6 +49,11 @@ strategy:
       stop_loss_pct: 0.020
       profit_lock_threshold: 0.005
       rwi_trigger: 1.2
+    INJ:
+      take_profit_pct: 0.015
+      stop_loss_pct: 0.020
+      profit_lock_threshold: 0.0
+      rwi_trigger: 1.0
 
 risk:
   margin_mode: "ISOLATED" # ISOLATED or CROSSED
@@ -53,7 +61,7 @@ risk:
   btc_leverage: 5
   margin_per_trade_usdt: 1.0 # Margin in USDT per position (used if margin_pct_per_trade is 0)
   margin_pct_per_trade: 0.02 # 2% of equity per trade
-  max_open_positions: 5
+  max_open_positions: 6
   take_profit_pct: 0.015 # 1.5% TP (0 to disable)
   stop_loss_pct: 0.025   # 2.5% SL (0 to disable)
   profit_lock_threshold: 0.01 # 1.0% profit lock for safety flip

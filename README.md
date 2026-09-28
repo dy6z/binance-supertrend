@@ -1,6 +1,6 @@
 # Binance Futures SuperRWI Bot
 
-Automated trading bot for Binance USD-M Futures using SuperTrend + Range Weighted Index (RWI) + Pivot Filter. Optimized for 5 specific crypto symbols on 15m timeframe.
+Automated trading bot for Binance USD-M Futures using SuperTrend + Range Weighted Index (RWI) + Pivot Filter. Optimized for 6 specific crypto symbols on 15m timeframe.
 
 ## Strategy: SuperRWI + Hybrid Exit
 - **Execution Model**: **Closed-Candle Evaluation**. The bot ignores forming candles (`df.iloc[:-1]`) to ensure parity with TradingView alerts and backtest results.
@@ -19,14 +19,19 @@ Deterministic, reproducible via `python3 backtest_5sym.py` (1x, no-fee, 5,713–
 | **ZEC** | 3.0 | 2.0 | 0.5 | 1.0 | **1.483** | 47.3 | 74 | 38.2% | 26.6% | `frozen_60d/ZEC.csv` |
 | **SOL** | 1.5 | 2.5 | 1.0 | 1.0 | **1.136** | 41.2 | 68 | 5.2% | 13.2% | `~/.home/dy6z/sol_data_frozen.csv` |
 | **SNDK** | 1.0 | 2.0 | 0.5 | 1.0 | **1.132** | 53.2 | 94 | 7.6% | 12.1% | `frozen_60d/SNDK.csv` |
+| **INJ** | 1.5 | 2.0 | 0.0 | 1.0 | **1.174** | 52.2 | 90 | 12.0% | 17.6% | `frozen_60d/INJ.csv` |
 
-**Total trades: 313**. Metrics are 1x no-fee for cross-symbol comparability.
+**Total trades: 403**. Metrics are 1x no-fee for cross-symbol comparability.
 Note: an older SOL snapshot (PF 2.01, WR 77.14%) was validated on a different dataset; current canonical run uses `sol_data_frozen.csv`.
+INJ (added 2026-09-28) was the only survivor of a 7-candidate RWI-1.0 default screen; its `profit_lock` is intentionally 0.0 (unlike the others' 0.5/1.0) per the frozen grid result.
 
 ## Data Management (Frozen Snapshots)
 To ensure deterministic results, all backtests and grid searches MUST use the following frozen snapshots:
-- **BTC/SOL/ZEC/SNDK/PEPE**: Snapshots stored in `frozen_60d/` and `data_snapshot/`.
+- **BTC/SOL/ZEC/SNDK/PEPE/INJ**: Snapshots stored in `frozen_60d/` and `data_snapshot/`.
 - **Validation**: Every strategy change must be verified against `backtest_5sym.py` to ensure no regression in combined Profit Factor.
+
+## Maintenance Log
+- **2026-09-28**: INJ added to live roster (TP1.5/SL2.0/lock0/RWI1.0). Also fixed a silent bug: `runner.py` had the symbol list HARDCODED, so edits to `strategy.symbols` in `settings.yaml` were ignored. The runner now reads the list from the YAML (single source of truth) — after any config change, verify the startup log line `Starting Binance SuperTrend Bot | Symbols: [...]` before trusting the roster.
 
 ## Directory Structure
 ```text

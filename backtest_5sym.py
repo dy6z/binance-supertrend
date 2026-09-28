@@ -51,7 +51,8 @@ symdata = {
     'SOL':      ('/home/dy6z/sol_data_frozen.csv',                                  0.015, 0.025, 0.01,  1.0, 10),
     'ZEC':      ('/home/dy6z/workspace/binance-supertrend/frozen_60d/ZEC.csv',       0.03,  0.02,  0.005, 1.0, 10),
     'SNDK':     ('/home/dy6z/workspace/binance-supertrend/frozen_60d/SNDK.csv',      0.01,  0.02,  0.005, 1.0, 10),
-    '1000PEPE': ('/home/dy6z/workspace/binance-supertrend/frozen_60d/1000PEPE.csv',  0.02,  0.02,  0.005, 1.2, 10),
+    '1000PEPE': ('/home/dy6z/workspace/binance-supertrend/frozen_60d/1000PEPE.csv', 0.02,  0.02,  0.005, 1.2, 10),
+    'INJ':      ('/home/dy6z/workspace/binance-supertrend/frozen_60d/INJ.csv',      0.015, 0.02,  0.0,   1.0, 10),
 }
 
 print(f"{'SYM':9}{'Candles':>8}{'Trades':>7}{'WR%':>6}{'PF':>7}{'Ret_1x%':>9}{'MaxDD%':>8}  params")

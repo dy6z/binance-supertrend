@@ -19,8 +19,10 @@ def run():
     strategy = settings.get('strategy', {})
     sp = strategy.get('symbol_params', {})
 
-    # Symbols from settings.yaml (AKE removed 2026-09-26 - negative PF on 60d backtest)
-    symbols = ["BTC/USDT:USDT", "SOL/USDT:USDT", "ZEC/USDT:USDT", "SNDK/USDT:USDT", "1000PEPE/USDT:USDT"]
+    # Symbols from settings.yaml strategy.symbols (single source of truth).
+    # AKE removed 2026-09-26 (negative PF 60d). INJ added 2026-09-28 (PF 1.17 grid).
+    symbols = strategy.get('symbols', ["BTC/USDT:USDT", "SOL/USDT:USDT", "ZEC/USDT:USDT",
+                                      "SNDK/USDT:USDT", "1000PEPE/USDT:USDT"])
     # Per-symbol leverage override (BTC uses 5x per settings.yaml btc_leverage)
     lev_override = {"BTC": settings.get('risk', {}).get('btc_leverage', 5)}
     log.info(f"Starting Binance SuperTrend Bot | Symbols: {symbols}")
