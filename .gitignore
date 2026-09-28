@@ -7,6 +7,17 @@ trade_log.csv
 zec_grid.csv
 grid_search_results.csv
 
+# 2026-09-28 candidate screen data (rejected symbols — kept locally, not used by bot)
+frozen_60d/ADAUSDT.csv
+frozen_60d/AVAXUSDT.csv
+frozen_60d/BNBUSDT.csv
+frozen_60d/DOGEUSDT.csv
+frozen_60d/LINKUSDT.csv
+frozen_60d/SUI.csv
+frozen_60d/SUI_grid.csv
+frozen_60d/TONUSDT.csv
+frozen_60d/XRPUSDT.csv
+
 # Logs
 logs/*.log
 
